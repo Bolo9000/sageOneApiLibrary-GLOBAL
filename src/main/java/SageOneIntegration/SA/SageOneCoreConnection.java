@@ -49,6 +49,8 @@ import static SageOneIntegration.SA.SageOneConstants.CLIENT_USERNAME;
 import static SageOneIntegration.SageOneApiConnector.client;
 import static SageOneIntegration.SageOneConstants.SKIP_QUERY_PARAM;
 import static SageOneIntegration.SageOneCoreHelperMethods.encodeCurlyBrackets;
+import org.springframework.web.client.RestTemplate;
+org.springframework.http.ResponseEntity<T>;
 
 /**
  * Created by Ricardo on 2017-07-05.
@@ -65,6 +67,7 @@ public final class SageOneCoreConnection {
     protected static List<Object> objectsBeforeConversion;
     protected static boolean resultLimitReached = false;
     protected static Tika tika = new Tika();
+	protected static RestTemplate restTemplate = new RestTemplate();
 
     private static void setNotEncodedCreditentials() {
         SageOneCoreConnection.notEncodedCredentials = new char[CLIENT_USERNAME.length + CLIENT_PASSWORD.length + 1];
@@ -289,6 +292,24 @@ public final class SageOneCoreConnection {
 
         return jsonObjectToReturn;
     }
+
+ public static SageOneResponseJsonDataObject ConnectionCoreCodeReturnResponseJson(final int companyId,
+                                                                                     final String endpoint,
+                                                                                     final RequestMethod requestMethod,
+                                                                                     final String jsonEntityToPost,
+																					 boolean SpringRest) {
+
+	    ResponseEntity<String> responseEntity = restTemplate.getForEntity(endpoint,String.class);
+
+        SageOneResponseJsonDataObject.initializeClass();
+
+        SageOneResponseJsonDataObject jsonObjectToReturn = (response)
+                ? new SageOneResponseJsonDataObject(true, null, resultToReturn) :
+                new SageOneResponseJsonDataObject(false, "ERROR", resultToReturn);
+
+        SageOneResponseJsonDataObject.deInitializeClass();
+	    return jsonObjectToReturn;
+}
 
     final static SageOneResponseObject sageOneGrabData(final int companyId,
                                                        final String endpointPlusQuery,
